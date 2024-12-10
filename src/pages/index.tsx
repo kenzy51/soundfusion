@@ -1,28 +1,19 @@
 import Head from "next/head";
 import Image from "next/image";
-import localFont from "next/font/local";
 import styles from "@/styles/Home.module.css";
 import { motion } from "framer-motion";
 import { ThemeProvider } from "@emotion/react";
 import theme from "@/lib/createTheme";
 import { Button } from "@mui/material";
 import { useRouter } from "next/router";
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+
+import { geistSans, geistMono } from "@/lib/fonts";
 
 export default function Home() {
   const router = useRouter();
 
-  const handleClick = () => {
-    router.push("/sign-up");
+  const handleLogin = () => {
+    router.push("/sign-in");
   };
 
   return (
@@ -52,7 +43,11 @@ export default function Home() {
             >
               Место, в котором объединяться все музыканты
             </motion.h4>{" "}
-            <Button onClick={handleClick}>Зарегистрироваться</Button>
+            <div className={styles.buttonGroup}>
+              <Button onClick={handleLogin} variant="outlined" color="primary">
+                Войти
+              </Button>
+            </div>
           </main>
         </div>
       </ThemeProvider>

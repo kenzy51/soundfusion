@@ -14,19 +14,20 @@ import { ThemeProvider } from "@mui/material/styles";
 import theme from "@/lib/createTheme";
 
 const musicianTypes = [
-  "Pianist",
-  "Guitarist",
-  "Drummer",
-  "Soundwriter",
-  "Vocalist",
-  "Producer",
+  { value: "Pianist", label: "Пианист" },
+  { value: "Guitarist", label: "Гитарист" },
+  { value: "Drummer", label: "Барабанщик" },
+  { value: "Songwriter", label: "Композитор" },
+  { value: "Vocalist", label: "Вокалист" },
+  { value: "Producer", label: "Продюсер" },
+  { value: "No skills", label: "Без навыков" },
 ];
 
 const Signup = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    password: "", 
+    password: "",
     musicianType: "",
     goal: "",
   });
@@ -44,6 +45,12 @@ const Signup = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleMusicianTypeChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setFormData({ ...formData, musicianType: e.target.value });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (
@@ -53,7 +60,7 @@ const Signup = () => {
       !formData.musicianType ||
       !formData.goal
     ) {
-      setSnackbarMessage("Please fill in all fields");
+      setSnackbarMessage("Пожалуйста, заполните все поля.");
       setSnackbarSeverity("error");
       setOpenSnackbar(true);
       return;
@@ -67,7 +74,7 @@ const Signup = () => {
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) throw new Error("Failed to register user.");
+      if (!response.ok) throw new Error("Не удалось зарегистрировать.");
 
       const data = await response.json();
       setSnackbarMessage("Вас успешно добавили в базу музыкантов!");
@@ -75,7 +82,7 @@ const Signup = () => {
       setOpenSnackbar(true);
     } catch (error) {
       console.error(error);
-      setSnackbarMessage("К сожалению не удалось зарегистрировать.");
+      setSnackbarMessage("К сожалению, не удалось зарегистрировать.");
       setSnackbarSeverity("error");
       setOpenSnackbar(true);
     } finally {
@@ -137,8 +144,8 @@ const Signup = () => {
             <TextField
               fullWidth
               margin="normal"
-              label="Пароль" // added password field label
-              type="password" // set the input type to password
+              label="Пароль"
+              type="password"
               variant="outlined"
               name="password"
               value={formData.password}
@@ -154,13 +161,13 @@ const Signup = () => {
               variant="outlined"
               name="musicianType"
               value={formData.musicianType}
-              onChange={handleInputChange}
+              onChange={handleMusicianTypeChange}
               required
               InputLabelProps={{ style: { color: "#fff" } }}
             >
-              {musicianTypes.map((type) => (
-                <MenuItem key={type} value={type}>
-                  {type}
+              {musicianTypes.map(({ value, label }) => (
+                <MenuItem key={value} value={value}>
+                  {label}
                 </MenuItem>
               ))}
             </TextField>
