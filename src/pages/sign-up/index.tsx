@@ -7,6 +7,8 @@ import {
   Typography,
   TextareaAutosize,
   CircularProgress,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "@/lib/createTheme";
@@ -24,11 +26,17 @@ const Signup = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    password: "", 
     musicianType: "",
     goal: "",
   });
 
   const [loading, setLoading] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
+    "success"
+  );
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -41,16 +49,19 @@ const Signup = () => {
     if (
       !formData.name ||
       !formData.email ||
+      !formData.password ||
       !formData.musicianType ||
       !formData.goal
     ) {
-      alert("Please fill in all fields");
+      setSnackbarMessage("Please fill in all fields");
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
       return;
     }
 
     setLoading(true);
     try {
-      const response = await fetch("/api/register", {
+      const response = await fetch("/api/signUp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -59,10 +70,14 @@ const Signup = () => {
       if (!response.ok) throw new Error("Failed to register user.");
 
       const data = await response.json();
-      alert("Registration successful!");
+      setSnackbarMessage("Вас успешно добавили в базу музыкантов!");
+      setSnackbarSeverity("success");
+      setOpenSnackbar(true);
     } catch (error) {
       console.error(error);
-      alert("Failed to register user. Please try again.");
+      setSnackbarMessage("К сожалению не удалось зарегистрировать.");
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
     } finally {
       setLoading(false);
     }
@@ -92,7 +107,7 @@ const Signup = () => {
           }}
         >
           <Typography variant="h4" align="center" gutterBottom>
-            Зарегистрироваться{" "}
+            Зарегистрироваться
           </Typography>
 
           <form onSubmit={handleSubmit}>
@@ -120,6 +135,18 @@ const Signup = () => {
               InputLabelProps={{ style: { color: "#fff" } }}
             />
             <TextField
+              fullWidth
+              margin="normal"
+              label="Пароль" // added password field label
+              type="password" // set the input type to password
+              variant="outlined"
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              required
+              InputLabelProps={{ style: { color: "#fff" } }}
+            />
+            <TextField
               select
               fullWidth
               margin="normal"
@@ -138,7 +165,7 @@ const Signup = () => {
               ))}
             </TextField>
             <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
-              Цель как музыканта{" "}
+              Цель как музыканта
             </Typography>
             <TextareaAutosize
               name="goal"
@@ -174,6 +201,20 @@ const Signup = () => {
           </form>
         </Box>
       </Box>
+
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setOpenSnackbar(false)}
+      >
+        <Alert
+          onClose={() => setOpenSnackbar(false)}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </ThemeProvider>
   );
 };
