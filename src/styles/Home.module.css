@@ -1,11 +1,13 @@
 .page {
+  margin: 0;
   --gray-rgb: 0, 0, 0;
   --gray-alpha-200: rgba(var(--gray-rgb), 0.08);
   --gray-alpha-100: rgba(var(--gray-rgb), 0.05);
 
   --button-primary-hover: #383838;
   --button-secondary-hover: #f2f2f2;
-
+  background-color: black;
+  color: white;
   display: grid;
   grid-template-rows: 20px 1fr 20px;
   align-items: center;
@@ -68,10 +70,7 @@
   padding: 0 20px;
   border: none;
   border: 1px solid transparent;
-  transition:
-    background 0.2s,
-    color 0.2s,
-    border-color 0.2s;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
   cursor: pointer;
   display: flex;
   align-items: center;
