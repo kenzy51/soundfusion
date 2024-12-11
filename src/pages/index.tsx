@@ -6,11 +6,19 @@ import { ThemeProvider } from "@emotion/react";
 import theme from "@/lib/createTheme";
 import { Button } from "@mui/material";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 import { geistSans, geistMono } from "@/lib/fonts";
 
 export default function Home() {
   const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/dashboard");
+    }
+  }, [router]);
 
   const handleLogin = () => {
     router.push("/sign-in");
@@ -41,7 +49,7 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ duration: 1, delay: 0.5 }}
             >
-              Место, в котором объединяться все музыканты
+              Место, в котором объединяются все музыканты
             </motion.h4>{" "}
             <div className={styles.buttonGroup}>
               <Button onClick={handleLogin} variant="outlined" color="primary">
