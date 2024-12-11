@@ -45,9 +45,7 @@ const Signup = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleMusicianTypeChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleMusicianTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, musicianType: e.target.value });
   };
 
@@ -178,7 +176,7 @@ const Signup = () => {
               name="goal"
               value={formData.goal}
               onChange={handleInputChange}
-              placeholder="Опишите свою цель..."
+              placeholder="Опишите, какую цель вы имеете для сферы музыки в Центральной Азии(если вы не музыкант, оставьте также свое мнение)"
               minRows={4}
               style={{
                 width: "100%",

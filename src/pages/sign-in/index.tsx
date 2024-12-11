@@ -45,7 +45,8 @@ const SignIn = () => {
         throw new Error(data.message || "Something went wrong");
       }
       localStorage.setItem("token", data.token);
-
+      localStorage.setItem("name", data.name);
+      localStorage.setItem("goal", data.goal);
       router.push("/dashboard");
       setSnackbarMessage("Вы вошли успешно!");
       setSnackbarSeverity("success");

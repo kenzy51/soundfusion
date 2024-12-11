@@ -60,11 +60,13 @@ export default async function handler(req, res) {
 
   try {
     const user = await User.findOne({ email });
+
     if (!user) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
+
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
@@ -72,13 +74,16 @@ export default async function handler(req, res) {
     const token = jwt.sign(
       { userId: user._id, email: user.email },
       '3!nF9_#djP*7y@4gZQ8lP^&vWx',
-      { expiresIn: "7d" } 
+      { expiresIn: "7d" }
     );
 
     return res.status(200).json({
       message: "Login successful",
       token,
+      name: user.name,   // Returning the user's name
+      goal: user.goal    // Returning the user's goal
     });
+
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Server error" });
