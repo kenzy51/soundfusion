@@ -10,9 +10,10 @@ import {
 import { ThemeProvider } from "@emotion/react";
 import theme from "@/lib/createTheme";
 import { useRouter } from "next/router";
-import useUserStore from "@/app/store/userStore";
+import { observer } from "mobx-react-lite";
+import userStore from "@/app/store/userStore";
 
-const SignIn = () => {
+const SignIn = observer(() => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -23,54 +24,47 @@ const SignIn = () => {
     "success"
   );
   const router = useRouter();
+
   const handleSignUp = () => {
     router.push("/sign-up");
   };
 
-  const handleSignIn = async (e:any) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
+ 
+const handleSignIn = async (e) => {
+  e.preventDefault();
+  setError(null);
+  setLoading(true);
 
-    try {
-      const response = await fetch("/api/signIn", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+  try {
+    const response = await fetch("/api/signIn", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || "Something went wrong");
-      }
-
-      useUserStore.getState().setUser({
-        user: {
-          name: data.name,
-          goal: data.goal,
-          preferredMusicGenre: data.preferredMusicGenre,
-          instagram: data.instagram,
-        },
-        token: data.token,
-      });
-      
-
-      router.push("/dashboard");
-      setSnackbarMessage("Вы вошли успешно!");
-      setSnackbarSeverity("success");
-      setOpenSnackbar(true);
-    } catch (err: any) {
-      setError(err.message);
-      setSnackbarMessage("К сожалению, не удалось войти.");
-      setSnackbarSeverity("error");
-      setOpenSnackbar(true);
-    } finally {
-      setLoading(false);
+    if (!response.ok) {
+      throw new Error(data.message || "Something went wrong");
     }
-  };
+
+    userStore.setUser(data);
+
+    router.push("/dashboard");
+    setSnackbarMessage("Вы вошли успешно!");
+    setSnackbarSeverity("success");
+    setOpenSnackbar(true);
+  } catch (err) {
+    setError(err.message);
+    setSnackbarMessage("К сожалению, не удалось войти.");
+    setSnackbarSeverity("error");
+    setOpenSnackbar(true);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <ThemeProvider theme={theme}>
@@ -148,6 +142,6 @@ const SignIn = () => {
       </Snackbar>
     </ThemeProvider>
   );
-};
+});
 
 export default SignIn;

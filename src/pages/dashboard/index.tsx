@@ -1,27 +1,24 @@
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import {
-  Button,
-  Box,
-  Typography,
-  TextField,
-  CircularProgress,
-} from "@mui/material";
+import { Button, Box, Typography, TextField } from "@mui/material";
 import theme from "@/lib/createTheme";
 import { ThemeProvider } from "@emotion/react";
-import { useCurrentUserStore } from "@/app/store/userStore";
-const Dashboard = () => {
+import { observer } from "mobx-react-lite";
+import userStore from "@/app/store/userStore";
+
+const DashboardComponent = observer(() => {
   const router = useRouter();
-  const { user, clearUser,  } = useCurrentUserStore();
+  const { user, clearUser } = userStore;
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState("");
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    if (!user.token) {
+    if (!userStore.isLoggedIn()) {
       router.push("/sign-in");
     }
-  }, [ router]);
+  }, [router]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -69,15 +66,6 @@ const Dashboard = () => {
     router.push("/sign-in");
   };
 
-  // if (!isRehydrated) {
-  //   return (
-  //     <Box sx={{ textAlign: "center", mt: 4 }}>
-  //       <CircularProgress />
-  //       <Typography>Loading...</Typography>
-  //     </Box>
-  //   );
-  // }
-
   return (
     <ThemeProvider theme={theme}>
       <div>
@@ -86,11 +74,7 @@ const Dashboard = () => {
             Выйти
           </Button>
         </Box>
-        <h1>Привет, {user.name}!</h1>
-        <h3>Твоя цель: {user.goal}</h3>
-        <p>Ты любишь: {user.preferredMusicGenre}!</p>
-        <h3>Инстаграм твой: {user.instagram}!</h3>
-
+        <h1>Привет, {user?.name || "Гость"}!</h1>
         <Typography variant="h6">Опубликуй свою демку</Typography>
         <Box sx={{ mt: 2 }}>
           <TextField
@@ -114,6 +98,10 @@ const Dashboard = () => {
       </div>
     </ThemeProvider>
   );
-};
+});
+
+const Dashboard = dynamic(() => Promise.resolve(DashboardComponent), {
+  ssr: false,
+});
 
 export default Dashboard;
