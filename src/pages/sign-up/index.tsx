@@ -15,12 +15,15 @@ import theme from "@/lib/createTheme";
 
 const musicianTypes = [
   { value: "Pianist", label: "Пианист" },
-  { value: "Guitarist", label: "Гитарист" },
+  { value: "Guitarist/Bass", label: "Гитарист/Басист" },
   { value: "Drummer", label: "Барабанщик" },
   { value: "Songwriter", label: "Композитор" },
   { value: "Vocalist", label: "Вокалист" },
   { value: "Producer", label: "Продюсер" },
   { value: "No skills", label: "Без навыков" },
+  { value: "Violinst", label: "Скрипач" },
+  { value: "Wind instruments", label: "Духовые инструменты" },
+  { value: "Other", label: "Другое" },
 ];
 
 const Signup = () => {
@@ -30,6 +33,8 @@ const Signup = () => {
     password: "",
     musicianType: "",
     goal: "",
+    instagram: "",
+    preferredMusicGenre: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -58,7 +63,7 @@ const Signup = () => {
       !formData.musicianType ||
       !formData.goal
     ) {
-      setSnackbarMessage("Пожалуйста, заполните все поля.");
+      setSnackbarMessage("Пожалуйста, заполните все обязательные поля.");
       setSnackbarSeverity("error");
       setOpenSnackbar(true);
       return;
@@ -125,7 +130,6 @@ const Signup = () => {
               value={formData.name}
               onChange={handleInputChange}
               required
-              InputLabelProps={{ style: { color: "#fff" } }}
             />
             <TextField
               fullWidth
@@ -137,7 +141,6 @@ const Signup = () => {
               value={formData.email}
               onChange={handleInputChange}
               required
-              InputLabelProps={{ style: { color: "#fff" } }}
             />
             <TextField
               fullWidth
@@ -149,7 +152,6 @@ const Signup = () => {
               value={formData.password}
               onChange={handleInputChange}
               required
-              InputLabelProps={{ style: { color: "#fff" } }}
             />
             <TextField
               select
@@ -161,7 +163,6 @@ const Signup = () => {
               value={formData.musicianType}
               onChange={handleMusicianTypeChange}
               required
-              InputLabelProps={{ style: { color: "#fff" } }}
             >
               {musicianTypes.map(({ value, label }) => (
                 <MenuItem key={value} value={value}>
@@ -176,7 +177,7 @@ const Signup = () => {
               name="goal"
               value={formData.goal}
               onChange={handleInputChange}
-              placeholder="Опишите, какую цель вы имеете для сферы музыки в Центральной Азии(если вы не музыкант, оставьте также свое мнение)"
+              placeholder="Опишите вашу цель в музыке"
               minRows={4}
               style={{
                 width: "100%",
@@ -187,6 +188,26 @@ const Signup = () => {
                 borderRadius: "4px",
               }}
               required
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Instagram"
+              variant="outlined"
+              name="instagram"
+              value={formData.instagram}
+              onChange={handleInputChange}
+              placeholder="@ваш_инстаграм"
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Любимый музыкальный жанр"
+              variant="outlined"
+              name="preferredMusicGenre"
+              value={formData.preferredMusicGenre}
+              onChange={handleInputChange}
+              placeholder="Например: Jazz, Rock, Classical"
             />
             <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
               <Button

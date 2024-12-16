@@ -1,98 +1,115 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import {
-  TextField,
   Button,
   Box,
-  ThemeProvider,
-  List,
-  ListItem,
-  ListItemText,
   Typography,
+  TextField,
+  CircularProgress,
 } from "@mui/material";
-import styles from "@/styles/Home.module.css";
-import { geistSans, geistMono } from "@/lib/fonts";
 import theme from "@/lib/createTheme";
-
+import { ThemeProvider } from "@emotion/react";
+import { useCurrentUserStore } from "@/app/store/userStore";
 const Dashboard = () => {
   const router = useRouter();
-  const [name, setName] = useState(null);
-  const [goal, setGoal] = useState(null);
-  const [users, setUsers] = useState([]); // State to store users
-  const [searchTerm, setSearchTerm] = useState("");
+  const { user, clearUser,  } = useCurrentUserStore();
+  const [file, setFile] = useState(null);
+  const [fileName, setFileName] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
+    if (!user.token) {
       router.push("/sign-in");
-    } else {
-      const userName:any = localStorage.getItem("name");
-      const goal:any = localStorage.getItem("goal");
-      setGoal(goal);
-      setName(userName);
     }
-  }, [router]);
+  }, [ router]);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch("/api/users");
-        const data = await response.json();
-
-        if (response.ok) {
-          setUsers(data.users); 
-        } else {
-          console.error("Error fetching users:", data.error);
-        }
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
-
-    fetchUsers(); 
-  }, []);
-
-  const handleSearch = () => {
-    console.log("Searching for musician:", searchTerm);
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFile(file);
+      setFileName(file.name);
+    }
   };
 
-  if (!name) {
-    return <div>Loading...</div>;
-  }
+  const handleUpload = async () => {
+    if (!file) {
+      return alert("Please select a file to upload.");
+    }
+
+    const formData = new FormData();
+    formData.append("track", file);
+    formData.append("userId", user._id);
+
+    setUploading(true);
+
+    try {
+      const response = await fetch("/api/users/uploadTrack", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert("Track uploaded successfully");
+      } else {
+        alert("Error uploading track: " + data.error);
+      }
+    } catch (error) {
+      alert("Error uploading track: " + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    clearUser();
+    router.push("/sign-in");
+  };
+
+  // if (!isRehydrated) {
+  //   return (
+  //     <Box sx={{ textAlign: "center", mt: 4 }}>
+  //       <CircularProgress />
+  //       <Typography>Loading...</Typography>
+  //     </Box>
+  //   );
+  // }
 
   return (
     <ThemeProvider theme={theme}>
-      <div
-        className={`${styles.page} ${geistSans.variable} ${geistMono.variable}`}
-      >
+      <div>
         <Box sx={{ mb: 3, textAlign: "center" }}>
-          {/* <Button
-            variant="contained"
-            onClick={handleSearch}
-            sx={{ width: "100%" }}
-          >
-            Показать всех музыкантов
-          </Button> */}
+          <Button onClick={handleLogout} variant="contained" color="secondary">
+            Выйти
+          </Button>
         </Box>
-        <h1>Привет, {name}!</h1>
-        <h3>Твоя цель</h3>
-        <p>{goal}</p>
+        <h1>Привет, {user.name}!</h1>
+        <h3>Твоя цель: {user.goal}</h3>
+        <p>Ты любишь: {user.preferredMusicGenre}!</p>
+        <h3>Инстаграм твой: {user.instagram}!</h3>
 
-        <Box sx={{ mt: 3 }}>
-          <Typography variant="h5" gutterBottom>
-            Список музыкантов:
-          </Typography>
-          <List>
-            {users.map((user:any) => (
-              <ListItem key={user._id}>
-                <ListItemText
-                  primary={user.name}
-                  secondary={`${user.musicianType} - ${user.goal}`}
-                />
-              </ListItem>
-            ))}
-          </List>
+        <Typography variant="h6">Опубликуй свою демку</Typography>
+        <Box sx={{ mt: 2 }}>
+          <TextField
+            type="file"
+            onChange={handleFileChange}
+            variant="outlined"
+            fullWidth
+            label="Select Track"
+            sx={{ mb: 2 }}
+          />
+          {fileName && <Typography>{fileName}</Typography>}
+          <Button
+            onClick={handleUpload}
+            variant="contained"
+            color="primary"
+            disabled={uploading}
+          >
+            {uploading ? "Uploading..." : "Upload Track"}
+          </Button>
         </Box>
       </div>
     </ThemeProvider>

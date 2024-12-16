@@ -76,7 +76,7 @@ export default async function handler(req, res) {
 
   await dbConnect();
 
-  const { name, email, musicianType, goal, password } = req.body;
+  const { name, email, musicianType, goal, password, preferredMusicGenre, instagram, tracks } = req.body;
 
   if (!name || !email || !musicianType || !goal || !password) {
     return res.status(400).json({ error: "All fields are required" });
@@ -95,6 +95,9 @@ export default async function handler(req, res) {
       email,
       musicianType,
       goal,
+      preferredMusicGenre,
+      instagram,
+      tracks,
       password: hashedPassword,
     });
 
@@ -106,6 +109,7 @@ export default async function handler(req, res) {
         email: newUser.email,
         musicianType: newUser.musicianType,
         goal: newUser.goal,
+        tracks:newUser.tracks,
       },
     });
   } catch (error) {

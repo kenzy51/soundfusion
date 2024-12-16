@@ -10,6 +10,7 @@ import {
 import { ThemeProvider } from "@emotion/react";
 import theme from "@/lib/createTheme";
 import { useRouter } from "next/router";
+import useUserStore from "@/app/store/userStore";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -25,7 +26,8 @@ const SignIn = () => {
   const handleSignUp = () => {
     router.push("/sign-up");
   };
-  const handleSignIn = async (e: any) => {
+
+  const handleSignIn = async (e:any) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
@@ -44,9 +46,18 @@ const SignIn = () => {
       if (!response.ok) {
         throw new Error(data.message || "Something went wrong");
       }
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("name", data.name);
-      localStorage.setItem("goal", data.goal);
+
+      useUserStore.getState().setUser({
+        user: {
+          name: data.name,
+          goal: data.goal,
+          preferredMusicGenre: data.preferredMusicGenre,
+          instagram: data.instagram,
+        },
+        token: data.token,
+      });
+      
+
       router.push("/dashboard");
       setSnackbarMessage("Вы вошли успешно!");
       setSnackbarSeverity("success");
