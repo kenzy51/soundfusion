@@ -1,18 +1,18 @@
 import { makeAutoObservable } from "mobx";
 
 class UserStore {
-  user: any = null;
+  user: { [key: string]: any } | null = null;
 
   constructor() {
-    makeAutoObservable(this);
+    makeAutoObservable(this, {}, { autoBind: true }); 
     if (typeof window !== "undefined") {
-      this.loadUser(); // Load user only in the browser
+      this.loadUser();
     }
   }
 
-  setUser(user: any) {
+  setUser(user: { [key: string]: any } | null) {
     this.user = user;
-    this.saveUser(); // Save to local storage
+    this.saveUser();
   }
 
   clearUser() {
@@ -35,8 +35,11 @@ class UserStore {
   loadUser() {
     if (typeof window !== "undefined") {
       const userData = localStorage.getItem("user");
-      if (userData) {
-        this.user = JSON.parse(userData);
+      try {
+        this.user = userData ? JSON.parse(userData) : null;
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+        this.user = null;
       }
     }
   }

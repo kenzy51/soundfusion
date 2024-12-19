@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "@/lib/createTheme";
+import { useRouter } from "next/router";
 
 const musicianTypes = [
   { value: "Pianist", label: "Пианист" },
@@ -53,7 +54,11 @@ const Signup = () => {
   const handleMusicianTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, musicianType: e.target.value });
   };
+  const router = useRouter();
 
+  const goToSignIn = () => {
+    router.push("/sign-in");
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (
@@ -80,7 +85,9 @@ const Signup = () => {
       if (!response.ok) throw new Error("Не удалось зарегистрировать.");
 
       const data = await response.json();
-      setSnackbarMessage("Вас успешно добавили в базу музыкантов!");
+
+      setSnackbarMessage("Регистрация прошла успешно! Войдите");
+      goToSignIn()
       setSnackbarSeverity("success");
       setOpenSnackbar(true);
     } catch (error) {

@@ -84,6 +84,7 @@ export default async function handler(req, res) {
       goal: user.goal,
       preferredMusicGenre: user.preferredMusicGenre,
       instagram: user.instagram,
+      id:user._id
     });
   } catch (error) {
     console.error(error);

@@ -30,7 +30,7 @@ const SignIn = observer(() => {
   };
 
  
-const handleSignIn = async (e) => {
+const handleSignIn = async (e:any) => {
   e.preventDefault();
   setError(null);
   setLoading(true);
@@ -56,7 +56,7 @@ const handleSignIn = async (e) => {
     setSnackbarMessage("Вы вошли успешно!");
     setSnackbarSeverity("success");
     setOpenSnackbar(true);
-  } catch (err) {
+  } catch (err:any) {
     setError(err.message);
     setSnackbarMessage("К сожалению, не удалось войти.");
     setSnackbarSeverity("error");

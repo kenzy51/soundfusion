@@ -40,10 +40,10 @@ export default async function handler(req, res) {
 
   await dbConnect();
 
-  const { title, genre, duration, releaseDate } = req.body;
+  const { title, genre,releaseDate,trackUrl } = req.body;
   const userId = req.userId; // Assuming you have user authentication and userId from token
 
-  if (!title || !genre || !duration || !releaseDate) {
+  if (!title || !genre || !trackUrl || !releaseDate) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
@@ -55,7 +55,7 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const newTrack = { title, genre, duration, releaseDate: new Date(releaseDate) };
+    const newTrack = { title, genre, trackUrl, releaseDate: new Date(releaseDate) };
 
     user.tracks.push(newTrack); // Push the new track into the tracks array
     await user.save(); // Save the updated user

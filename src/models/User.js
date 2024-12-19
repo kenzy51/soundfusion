@@ -11,10 +11,6 @@ const trackSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  duration: {
-    type: Number, 
-    required: true,
-  },
   releaseDate: {
     type: Date,
     required: true,
